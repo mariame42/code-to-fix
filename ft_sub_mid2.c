@@ -1,7 +1,34 @@
 #include <stdio.h>
 #include <string.h>
 
-int ft_mid_with(char *file, char *wildcard, int wc, int end)
+void ft_check_rest(char *file, char *wildcard, int *wc, int *i)
+{
+    int tmp;
+
+    tmp = (*wc);
+    tmp++;
+    (*i)++;
+    while (wildcard[tmp] != '*')
+    {
+        if (file[(*i)] && wildcard[tmp] != file[(*i)])
+            break ;
+        if (file[(*i)] == '\0' || wildcard[tmp] == '\0')
+            break ;
+        if (file[(*i)] && wildcard[tmp] == file[(*i)])
+        {
+            tmp++;
+            (*i)++;
+        }
+    }
+    if (wildcard[tmp] != '*')
+    {
+        (*wc)--;
+        return ;
+    }
+    (*wc) = tmp;
+}
+
+int ft_mid_with(char *file, char *wildcard, int wc)
 {
     int i = 0;
     int flag = 0;
@@ -16,26 +43,11 @@ int ft_mid_with(char *file, char *wildcard, int wc, int end)
             {
                 if (wildcard[wc] && wildcard[wc] == file[i])
                 {
-                    wc++;
-                    i++;
-                    break;
+                    ft_check_rest(file, wildcard, &wc, &i);
+                    break ;
                 }
                 else
                     i++;
-            }
-            while (wildcard[wc] != '*')
-            {
-                if (file[i] && wildcard[wc] != file[i])
-                    break ;
-                if (file[i] == '\0' || wildcard[wc] == '\0')
-                    break ;
-                if (i == end)
-                    break ;
-                if (file[i] && wildcard[wc] == file[i])
-                {
-                    wc++;
-                    i++;
-                }
             }
         }
     }
@@ -46,7 +58,7 @@ int ft_mid_with(char *file, char *wildcard, int wc, int end)
 
 int main(void)
 {
-    int res = ft_mid_with("minishell.c", "*mini*h*l.c*", 0, strlen("minishell.c"));
+    int res = ft_mid_with("minishell.c", "*mini*h*l.c*", 0);
     if (res == 1)
         printf("it is fine");
     if (res == 0)
